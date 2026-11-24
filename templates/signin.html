@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Langdon Forms{% endblock %}
+{% block body_class %}auth{% endblock %}
+{% block main %}
+<div class="auth-wrap">
+  <section class="panel">
+    <h1>Sign In</h1>
+    <p class="lede">Sign in to make forms and read responses.</p>
+    <form id="auth-form">
+      <label class="block"><span>Email</span><input id="email" type="email" autocomplete="username" maxlength="254" spellcheck="false"></label>
+      <label class="block"><span>Password</span><input id="password" type="password" maxlength="128" autocomplete="current-password"></label>
+      <button class="primary" id="auth-submit" type="submit">Sign in</button>
+      <p class="status" id="status" role="status"></p>
+    </form>
+    <p class="switch">New here? <a href="/signup">Create an account</a></p>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}

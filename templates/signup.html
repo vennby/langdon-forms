@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Get started — Langdon Forms{% endblock %}
+{% block body_class %}auth wide{% endblock %}
+{% block main %}
+<div class="auth-wrap">
+  <section class="panel">
+    <h1>Create an account</h1>
+    <p class="lede">Create forms, share a link, and read how each answer was written.</p>
+    <div class="choice" role="group" aria-label="Account type">
+      <button type="button" data-kind="individual" class="on">Individual</button>
+      <button type="button" data-kind="organization">Organization</button>
+    </div>
+    <form id="auth-form" data-create="1">
+      <div class="fields">
+        <label class="block span" id="individual-name"><span>Name</span><input id="name" type="text" maxlength="80" autocomplete="name"></label>
+        <label class="block" id="org-name" hidden><span>Organization</span><input id="org" type="text" maxlength="80" autocomplete="organization"></label>
+        <label class="block" id="org-contact" hidden><span>Your name</span><input id="contact" type="text" maxlength="80" autocomplete="name"></label>
+        <label class="block"><span>Email</span><input id="email" type="email" autocomplete="username" maxlength="254" spellcheck="false"></label>
+        <label class="block"><span>Password <em class="hint">at least 10 characters</em></span>
+          <input id="password" type="password" maxlength="128" autocomplete="new-password">
+        </label>
+      </div>
+      <button class="primary" id="auth-submit" type="submit">Create account</button>
+      <p class="status" id="status" role="status"></p>
+    </form>
+    <p class="switch">Already have an account? <a href="/signin">Sign in</a></p>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}

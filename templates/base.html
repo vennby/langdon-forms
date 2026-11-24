@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Langdon Forms{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}" nonce="{{ nonce }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<header class="bar">
+  <span class="mark"><a href="/">Langdon Forms</a></span>
+  <nav id="nav">
+    {% block nav %}
+      <a href="/docs"{% if request.path == "/docs" %} class="on"{% endif %}>Docs</a>
+      {% if account %}
+        {% if request.path != "/forms" %}<a href="/forms">Your forms</a>{% endif %}
+      {% else %}
+        <a class="primary{% if request.path == '/signup' %} on{% endif %}" href="/signup">Get Started</a>
+      {% endif %}
+    {% endblock %}
+  </nav>
+  <div class="account" id="account">
+    {% if account %}
+      {% block account_extra %}{% endblock %}
+      <div class="profile" id="profile">
+        <button class="profile-button{% if request.path == '/profile' %} on{% endif %}" id="profile-button" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account menu for {{ account.name }}">{{ account.name[:1]|upper }}</button>
+        <div class="profile-menu" id="profile-menu" role="menu" hidden>
+          <p class="who">{{ account.name }}</p>
+          <a role="menuitem" href="/profile"{% if request.path == "/profile" %} class="on"{% endif %}>Profile</a>
+          <button role="menuitem" id="logout" type="button">Log out</button>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</header>
+<main id="app">
+  {% block main %}{% endblock %}
+</main>
+<script nonce="{{ nonce }}">
+  window.langdon = {
+    csrf: {{ csrf|tojson }},
+    account: {{ account|tojson }},
+    next: {{ (next_path|default("/forms"))|tojson }}
+  };
+</script>
+<script src="{{ url_for('static', filename='js/session.js') }}" nonce="{{ nonce }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
