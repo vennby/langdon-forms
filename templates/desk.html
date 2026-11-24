@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Your forms{% endblock %}
+{% block nav %}
+<a href="/docs">Docs</a>
+{% endblock %}
+{% block main %}
+<section class="page-heading">
+  <div>
+    <h1>Your forms</h1>
+    <p class="lede">Name a form, write the questions, and share a link. Each answer keeps the writing that produced it.</p>
+  </div>
+  <div class="row">
+    {% if forms %}<input class="search" id="form-search" type="text" placeholder="Search forms" aria-label="Search forms">{% endif %}
+    <button class="primary" id="new-form" type="button">New form</button>
+  </div>
+</section>
+<section class="composer" id="composer" hidden>
+  <h2>New form</h2>
+  <p class="lede">Start with a title. You can add questions on the next page.</p>
+  <label class="block"><span>Title</span>
+    <input id="new-title" type="text" maxlength="120" placeholder="For example, Summer internship">
+  </label>
+  <label class="block"><span>Description <em class="hint">optional</em></span>
+    <textarea id="new-description" rows="2" maxlength="2000" placeholder="Shown at the top of the form, for the person answering."></textarea>
+  </label>
+  <div class="row">
+    <button class="primary" id="create-form" type="button">Create form</button>
+    <button class="quiet" id="cancel-form" type="button">Cancel</button>
+  </div>
+  <p class="status" id="create-status" role="status"></p>
+</section>
+<div class="cards" id="form-cards">
+  {% for form in forms %}
+  <article class="card form-card">
+    <h2><a href="/f/{{ form.id }}/build">{{ form.title }}</a></h2>
+    {% if form.description %}<p class="blurb">{{ form.description }}</p>{% endif %}
+    <p class="meta">{% if form.questions|length == 1 %}1 question{% else %}{{ form.questions|length }} questions{% endif %} · {% if form.responses == 1 %}1 response{% else %}{{ form.responses }} responses{% endif %}</p>
+    <div class="row">
+      <a class="primary" href="/f/{{ form.id }}/build">Edit</a>
+      <a class="quiet" href="/f/{{ form.id }}">Preview</a>
+      <a class="quiet" href="/f/{{ form.id }}/answers">Responses</a>
+    </div>
+  </article>
+  {% else %}
+  <p class="empty" id="empty-forms">No forms yet. Create one when you are ready to ask a question.</p>
+  {% endfor %}
+</div>
+<p class="empty" id="no-matches" hidden>No forms match your search.</p>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/desk.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}

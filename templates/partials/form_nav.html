@@ -1,0 +1,3 @@
+<a href="/f/{{ form_id }}/build"{% if request.path == "/f/" ~ form_id ~ "/build" %} class="on"{% endif %}>Edit</a>
+<a href="/f/{{ form_id }}"{% if request.path == "/f/" ~ form_id %} class="on"{% endif %}>Preview</a>
+<a href="/f/{{ form_id }}/answers"{% if request.path == "/f/" ~ form_id ~ "/answers" %} class="on"{% endif %}>Responses</a>

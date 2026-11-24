@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block nav %}{% if owner %}{% include "partials/form_nav.html" %}{% endif %}{% endblock %}
+{% block account_extra %}{% if owner %}<a class="quiet" href="/forms">Your forms</a>{% endif %}{% endblock %}
+{% block main %}
+<div id="fill" data-form="{{ form_id }}">
+  <h1 id="form-title"></h1>
+  <p class="lede" id="lede" hidden></p>
+  <form id="sheet" hidden>
+    <div id="fields"></div>
+    <button class="primary" id="submit" type="submit">Submit</button>
+    <p class="status" id="status"></p>
+  </form>
+  <section class="done" id="done" hidden>
+    <h1>Response submitted</h1>
+    <p class="lede">The answer and how it was written are saved.</p>
+  </section>
+  <p class="status warn" id="fill-error" hidden></p>
+</div>
+<template id="field-template">
+  <label class="field block">
+    <span></span>
+    <textarea></textarea>
+  </label>
+</template>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/watch.js') }}" nonce="{{ nonce }}"></script>
+<script src="{{ url_for('static', filename='js/fill.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}

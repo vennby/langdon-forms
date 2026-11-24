@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body_class %}landing{% endblock %}
+{% block main %}
+<section class="reel">
+  <video src="/static/writing-in-fire.mp4" autoplay muted playsinline title="Gunna writing fire"></video>
+  <a class="beckon" id="beckon" href="#about" aria-label="Read about Langdon Forms">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </a>
+</section>
+<section class="about" id="about">
+  <div class="copy">
+    <h1><i>How</i> you write is now as valuable as <i>what</i> you write.</h1>
+    <p>Langdon Forms collects more than the finished text. While someone writes, it records their entire writing process.</p>
+    <div class="row">
+      {% if account %}
+        <a class="primary" href="/forms">Your forms</a>
+      {% else %}
+        <a class="primary" href="/signup">Get started</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/landing.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Profile — Langdon Forms{% endblock %}
+{% block main %}
+<section class="profile-page">
+  <div class="profile-card">
+    <div class="profile-mark" aria-hidden="true">{{ profile.name[:1]|upper }}</div>
+    <h1>{{ profile.name }}</h1>
+    <dl>
+      <div>
+        <dt>Email</dt>
+        <dd>{{ profile.email }}</dd>
+      </div>
+      <div>
+        <dt>Account</dt>
+        <dd>{% if profile.kind == "organization" %}Organization{% else %}Individual{% endif %}</dd>
+      </div>
+      {% if profile.kind == "organization" and profile.contact %}
+      <div>
+        <dt>Your name</dt>
+        <dd>{{ profile.contact }}</dd>
+      </div>
+      {% endif %}
+      {% if profile.joined %}
+      <div>
+        <dt>Joined</dt>
+        <dd>{{ profile.joined }}</dd>
+      </div>
+      {% endif %}
+    </dl>
+    <a class="primary" href="/forms">Your forms</a>
+  </div>
+</section>
+{% endblock %}

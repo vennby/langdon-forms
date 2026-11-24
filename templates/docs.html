@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Docs — Langdon Forms{% endblock %}
+{% block body_class %}docs-page{% endblock %}
+{% block main %}
+{% if pages %}
+<div class="manual">
+  <nav class="side" aria-label="Docs">
+    {% for page in pages %}
+      <a href="#{{ page.id }}">{{ page.title }}</a>
+    {% endfor %}
+  </nav>
+  <div class="prose" id="prose"></div>
+</div>
+<script type="application/json" id="docs-pages">{{ pages|tojson }}</script>
+{% else %}
+<p class="empty">No docs yet. Add a markdown file in the docs folder.</p>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if pages %}
+<script src="{{ url_for('static', filename='js/docs.js') }}" nonce="{{ nonce }}"></script>
+{% endif %}
+{% endblock %}

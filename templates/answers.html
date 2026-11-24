@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Responses — Langdon Forms{% endblock %}
+{% block nav %}{% include "partials/form_nav.html" %}{% endblock %}
+{% block account_extra %}<a class="quiet" href="/forms">Your forms</a>{% endblock %}
+{% block main %}
+<section class="page-heading">
+  <div>
+    <h1 id="form-title"></h1>
+    <p class="lede" id="lede"></p>
+  </div>
+</section>
+<div id="responses" data-form="{{ form_id }}"></div>
+<template id="response-template">
+  <article class="response">
+    <h2></h2>
+    <div class="sittings"></div>
+  </article>
+</template>
+<template id="sitting-template">
+  <section class="sitting">
+    <h3></h3>
+    <p class="answer"></p>
+  </section>
+</template>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/answers.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}

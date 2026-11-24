@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Edit — Langdon Forms{% endblock %}
+{% block nav %}{% include "partials/form_nav.html" %}{% endblock %}
+{% block account_extra %}<a class="quiet" href="/forms">Your forms</a>{% endblock %}
+{% block main %}
+<div class="studio">
+  <div class="studio-main">
+    <label class="block title-field"><span class="sr">Title</span>
+      <input id="title" class="title-input" type="text" value="{{ form.title }}" maxlength="120" placeholder="Form title">
+    </label>
+    <label class="block"><span class="sr">Description</span>
+      <textarea id="description" class="desc-input" rows="2" maxlength="2000" placeholder="Tell people what this form is for. Optional.">{{ form.description or "" }}</textarea>
+    </label>
+    <div id="questions"></div>
+    <div class="row">
+      <button class="quiet" id="add" type="button">Add a question</button>
+    </div>
+  </div>
+  <aside class="studio-side">
+    <section class="share">
+      <h2>Share</h2>
+      <p class="meta">Anyone with this link can answer. They do not need an account.</p>
+      <label class="block"><span>Link</span>
+        <input id="share-link" type="text" readonly value="">
+      </label>
+      <div class="row">
+        <button class="primary" id="copy-link" type="button">Copy link</button>
+        <a class="quiet" href="/f/{{ form.id }}">Preview</a>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </section>
+    <button class="danger" id="delete-form" type="button">Delete form</button>
+  </aside>
+</div>
+<template id="question-template">
+  <section class="question">
+    <header>
+      <strong class="q-number"></strong>
+      <button class="danger" type="button" data-remove>Remove</button>
+    </header>
+    <label class="block prompt"><span class="q-label">Question</span>
+      <textarea data-prompt rows="2" placeholder="Write the question"></textarea>
+    </label>
+    <div class="answer-kind">
+      <span>Answer</span>
+      <div class="kinds">
+        <button type="button" data-kind="short">Short</button>
+        <button type="button" data-kind="long">Long</button>
+      </div>
+      <p class="meta kind-note"></p>
+    </div>
+  </section>
+</template>
+<script type="application/json" id="form-data">{{ form|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/build.js') }}" nonce="{{ nonce }}"></script>
+{% endblock %}
