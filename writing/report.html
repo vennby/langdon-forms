@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --paper: #0b0908;
+    --card: #16110d;
+    --ink: #fff3e8;
+    --muted: #c9a58c;
+    --line: #3a2618;
+    --accent: #ff6a00;
+    --accent-soft: #2c160c;
+    --good: #ffb020;
+    --warn: #ff6a00;
+    --bad: #ff5a36;
+    --fast: #ffb000;
+    --mid: #ff6a00;
+    --slow: #ff3d00;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 22px 18px 48px; }
+  header h1 {
+    font-weight: 700;
+    font-size: 1.45rem;
+    letter-spacing: -.04em;
+    margin: 0 0 8px;
+  }
+  .meta { color: var(--muted); font-size: 13px; }
+  .chip {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 650;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .chip.good { color: var(--good); background: #2a1c08; }
+  .chip.warn { color: var(--warn); background: #2c160c; }
+  .chip.bad { color: var(--bad); background: #2a120e; }
+  .banner {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: #2c160c;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  button, .speed {
+    font: inherit;
+    font-size: 13px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: #100d0b;
+    padding: 7px 12px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  button.primary { background: var(--accent); color: #140c08; border-color: var(--accent); font-weight: 650; }
+  .speed.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 650; }
+  input[type="range"] { width: 100%; margin: 10px 0; accent-color: var(--accent); }
+  .clock { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+  pre.doc {
+    margin: 0;
+    min-height: 180px;
+    max-height: 42vh;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    font-size: 1.02rem;
+    line-height: 1.5;
+  }
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    background: var(--good);
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  .sel { background: #5c2e12; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .caption { min-height: 1.4em; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  h2 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
+  .summary { margin: 0 0 10px; line-height: 1.45; }
+  ul { margin: 0 0 12px; padding-left: 18px; }
+  li { margin: 4px 0; line-height: 1.4; }
+  dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin: 0; font-variant-numeric: tabular-nums; font-size: 14px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; text-align: right; }
+  .caveat { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 14px 0 0; }
+  .wide { margin-top: 18px; }
+  canvas { width: 100%; height: 230px; display: block; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; margin-top: 6px; }
+  .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .bars { display: flex; align-items: end; gap: 6px; height: 90px; margin-top: 8px; }
+  .bar { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; position: relative; }
+  .bar span {
+    position: absolute;
+    top: -16px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .bar-label { display: flex; gap: 6px; font-size: 10px; color: var(--muted); }
+  .bar-label span { flex: 1; text-align: center; }
+  .integrity { font-size: 13px; margin-top: 10px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="title"></h1>
+    <div class="chip" id="chip"></div>
+    <div class="banner" id="banner" hidden></div>
+  </header>
+  <div class="grid">
+    <section class="card">
+      <div class="caption" id="caption"></div>
+      <div class="toolbar">
+        <button class="primary" id="play" type="button">Play</button>
+        <button class="speed on" data-speed="1" type="button">1×</button>
+        <button class="speed" data-speed="2" type="button">2×</button>
+        <button class="speed" data-speed="3" type="button">3×</button>
+        <span class="clock" id="clock"></span>
+      </div>
+      <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Position in the sitting">
+      <pre class="doc" id="doc"></pre>
+    </section>
+    <section class="card">
+      <h2 id="reading-title"></h2>
+      <p class="summary" id="summary"></p>
+      <ul id="reasons"></ul>
+      <dl id="metrics"></dl>
+      <div class="integrity" id="integrity"></div>
+      <p class="caveat" id="caveat"></p>
+    </section>
+  </div>
+  <section class="card wide">
+    <h2>Writing rhythm</h2>
+    <p class="summary">Each point is the interval before a single-character keystroke. Height is that interval. A paste or a large insertion is a vertical line.</p>
+    <canvas id="rhythm" width="1000" height="230"></canvas>
+    <div class="legend">
+      <span><i class="swatch" style="background:#ffb000"></i>under 80 ms</span>
+      <span><i class="swatch" style="background:#ff6a00"></i>80–250 ms</span>
+      <span><i class="swatch" style="background:#ff3d00"></i>250–700 ms</span>
+      <span><i class="swatch" style="background:#ffd0a6"></i>paste or block</span>
+    </div>
+  </section>
+  <section class="card wide">
+    <h2>Intervals inside a typing run</h2>
+    <p class="summary">Gaps longer than 2 seconds are pauses and stay out of this histogram.</p>
+    <div class="bars" id="bars"></div>
+    <div class="bar-label" id="bar-labels"></div>
+  </section>
+</div>
+<script type="application/json" id="langdon-data">__LANGDON_DATA__</script>
+<script>
+const data = JSON.parse(document.getElementById("langdon-data").textContent);
+const events = data.events || [];
+const metrics = data.analysis.metrics;
+const duration = events.length ? events[events.length - 1].t : 0;
+
+const tone = { incremental: "good", mixed: "warn", inserted: "bad", inconclusive: "", empty: "" };
+document.getElementById("title").textContent = data.path || "Answer";
+document.title = data.path || "Writing";
+const chip = document.getElementById("chip");
+chip.textContent = data.analysis.title;
+chip.classList.add(tone[data.analysis.label] || "");
+const banner = document.getElementById("banner");
+const notes = [];
+if (data.synthetic) notes.push("Synthetic sitting, generated to show two different processes. It is not evidence about a person.");
+if (data.truncated) notes.push("The journal ended in a partial event. The last change may be missing.");
+if (notes.length) { banner.hidden = false; banner.textContent = notes.join(" "); }
+
+document.getElementById("reading-title").textContent = data.analysis.title;
+document.getElementById("summary").textContent = data.analysis.summary;
+const reasons = document.getElementById("reasons");
+for (const reason of data.analysis.reasons) {
+  const li = document.createElement("li");
+  li.textContent = reason;
+  reasons.append(li);
+}
+document.getElementById("caveat").textContent = data.analysis.caveat;
+
+const rows = [
+  ["Session length", fmt(metrics.session_ms)],
+  ["Typing time", fmt(metrics.typing_ms)],
+  ["Long pauses", metrics.long_pause_count + " · " + fmt(metrics.long_pause_ms)],
+  ["Hesitations, 1–2s", String(metrics.hesitation_count)],
+  ["Time unfocused", fmt(metrics.away_ms)],
+  ["Keystrokes", metrics.keystroke_chars + " chars"],
+  ["Deleted", metrics.deleted_chars + " chars"],
+  ["Pasted", metrics.pasted_chars + " chars"],
+  ["Median interval", metrics.median_iki_ms == null ? "—" : metrics.median_iki_ms + " ms"],
+  ["Interval p10–p90", metrics.iki_p10_ms == null ? "—" : metrics.iki_p10_ms + "–" + metrics.iki_p90_ms + " ms"],
+  ["Typing speed", metrics.typing_wpm == null ? "—" : metrics.typing_wpm + " wpm"]
+];
+const dl = document.getElementById("metrics");
+for (const [name, value] of rows) {
+  const dt = document.createElement("dt");
+  dt.textContent = name;
+  const dd = document.createElement("dd");
+  dd.textContent = value;
+  dl.append(dt, dd);
+}
+const integrity = document.getElementById("integrity");
+if (metrics.final_matches && !metrics.replay_mismatches) {
+  integrity.textContent = "Replay matches the final text.";
+} else if (!metrics.final_matches) {
+  integrity.textContent = "Replay does not match the final snapshot.";
+} else {
+  integrity.textContent = metrics.replay_mismatches + " events could not be applied.";
+}
+
+const counts = metrics.iki_histogram || [];
+const edges = metrics.iki_histogram_edges || [];
+const peak = Math.max(1, ...counts, 1);
+const bars = document.getElementById("bars");
+const barLabels = document.getElementById("bar-labels");
+counts.forEach((count, index) => {
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  bar.style.height = Math.max(2, (count / peak) * 78) + "px";
+  bar.style.opacity = count ? "1" : "0.25";
+  if (count) {
+    const n = document.createElement("span");
+    n.textContent = String(count);
+    bar.append(n);
+  }
+  bars.append(bar);
+  const label = document.createElement("span");
+  const hi = edges[index + 1];
+  label.textContent = hi >= 1000 ? (edges[index] / 1000) + "–" + (hi / 1000) + "s" : String(edges[index]);
+  barLabels.append(label);
+});
+
+let chars = [];
+let cursor = 0;
+let anchor = 0;
+let applied = 0;
+let mismatches = 0;
+let playT = -1;
+let playing = false;
+let speed = 1;
+let lastTs = null;
+const doc = document.getElementById("doc");
+const playButton = document.getElementById("play");
+const scrub = document.getElementById("scrub");
+const clock = document.getElementById("clock");
+const caption = document.getElementById("caption");
+
+function leadCount() {
+  let i = 0;
+  while (i < events.length && events[i].op === "checkpoint") i += 1;
+  return i;
+}
+const lead = leadCount();
+
+function applyEvent(ev) {
+  if (ev.op === "checkpoint") {
+    chars = Array.from(ev.text || "");
+    cursor = chars.length;
+    anchor = cursor;
+    return;
+  }
+  if (ev.op === "cursor") {
+    cursor = Math.min(ev.pos || 0, chars.length);
+    anchor = Math.min(ev.anchor == null ? cursor : ev.anchor, chars.length);
+    return;
+  }
+  if (ev.op === "focus" || ev.op === "blur") return;
+  if (ev.op === "delete" || ev.op === "history_delete") {
+    const removed = Array.from(ev.text || "");
+    const start = ev.pos || 0;
+    if (chars.slice(start, start + removed.length).join("") !== (ev.text || "")) {
+      mismatches += 1;
+      return;
+    }
+    chars.splice(start, removed.length);
+    cursor = start;
+    anchor = start;
+    return;
+  }
+  if (ev.op === "insert" || ev.op === "paste" || ev.op === "history_insert") {
+    const start = ev.pos || 0;
+    if (start < 0 || start > chars.length) { mismatches += 1; return; }
+    const ins = Array.from(ev.text || "");
+    chars.splice(start, 0, ...ins);
+    cursor = start + ins.length;
+    anchor = cursor;
+  }
+}
+
+function renderDoc() {
+  const left = Math.min(cursor, anchor);
+  const right = Math.max(cursor, anchor);
+  doc.replaceChildren();
+  appendText(chars.slice(0, left).join(""));
+  if (cursor < anchor) appendCaret();
+  if (right > left) {
+    const sel = document.createElement("span");
+    sel.className = "sel";
+    sel.textContent = chars.slice(left, right).join("");
+    doc.append(sel);
+  }
+  if (cursor >= anchor) appendCaret();
+  appendText(chars.slice(right).join(""));
+}
+function appendText(text) {
+  const span = document.createElement("span");
+  span.textContent = text;
+  doc.append(span);
+}
+function appendCaret() {
+  const caret = document.createElement("span");
+  caret.className = "caret";
+  doc.append(caret);
+}
+
+function paint(t) {
+  if (applied > lead && t < events[applied - 1].t) {
+    chars = [];
+    cursor = 0;
+    anchor = 0;
+    applied = 0;
+    mismatches = 0;
+  }
+  let changed = false;
+  while (applied < events.length && (applied < lead || events[applied].t <= t)) {
+    applyEvent(events[applied]);
+    applied += 1;
+    changed = true;
+  }
+  renderDoc();
+  if (changed) {
+    const caret = doc.querySelector(".caret");
+    if (caret) caret.scrollIntoView({ block: "nearest" });
+  }
+  let shown = null;
+  for (let i = 0; i < events.length; i += 1) {
+    if (events[i].t > t) break;
+    if (i >= lead) shown = events[i];
+  }
+  if (!shown) caption.textContent = lead ? "Opening text, before this sitting's edits." : "Start of the sitting.";
+  else if (t - shown.t > 1000 && (shown.op === "insert" || shown.op === "delete")) caption.textContent = "Pause " + fmt(t - shown.t);
+  else if (shown.op === "paste") caption.textContent = "Paste, " + Array.from(shown.text || "").length + " characters";
+  else if (shown.op === "insert" && Array.from(shown.text || "").length > 1) caption.textContent = "Insertion, " + Array.from(shown.text || "").length + " characters";
+  else if (shown.op === "insert") caption.textContent = "Keystroke “" + shown.text + "”";
+  else if (shown.op === "delete") caption.textContent = "Delete “" + shown.text + "”";
+  else if (shown.op === "blur") caption.textContent = "Editor unfocused";
+  else if (shown.op === "focus") caption.textContent = "Editor focused";
+  else if (shown.op === "history_insert" || shown.op === "history_delete") caption.textContent = "Undo or redo";
+  else if (shown.op === "checkpoint") caption.textContent = "Snapshot of the document";
+  else if (shown.op === "cursor") caption.textContent = "Cursor moved";
+  else caption.textContent = shown.op;
+  clock.textContent = fmt(Math.max(0, t)) + " / " + fmt(duration);
+}
+
+function points() {
+  const out = [];
+  let prev = null;
+  for (const ev of events) {
+    const length = Array.from(ev.text || "").length;
+    const single = (ev.op === "insert" || ev.op === "delete") && length === 1;
+    const block = ev.op === "paste" || (ev.op === "insert" && length >= 80);
+    if (block) {
+      out.push({ kind: "block", t: ev.t, n: length });
+      prev = null;
+      continue;
+    }
+    if (ev.op === "checkpoint" || ev.op === "history_insert" || (ev.op === "insert" && length !== 1) || (ev.op === "delete" && length !== 1)) {
+      prev = null;
+      continue;
+    }
+    if (single) {
+      if (prev != null && ev.t - prev > 0) out.push({ kind: "key", t: ev.t, dt: ev.t - prev });
+      prev = ev.t;
+    }
+  }
+  return out;
+}
+const rhythm = points();
+const canvas = document.getElementById("rhythm");
+
+function drawChart() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = rect.width;
+  const h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+  const left = 42;
+  const right = w - 12;
+  const top = 16;
+  const bottom = h - 22;
+  const yMin = 40;
+  const yMax = 2000;
+  function yOf(dt) {
+    const d = Math.max(yMin, Math.min(yMax, dt));
+    const n = Math.log(d / yMin) / Math.log(yMax / yMin);
+    return bottom - n * (bottom - top);
+  }
+  function xOf(t) {
+    return left + (Math.max(0, t) / Math.max(duration, 1)) * (right - left);
+  }
+  ctx.strokeStyle = "#3a2618";
+  ctx.fillStyle = "#c9a58c";
+  ctx.font = "11px Segoe UI, sans-serif";
+  ctx.lineWidth = 1;
+  for (const mark of [50, 100, 200, 500, 1000, 2000]) {
+    const y = yOf(mark);
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
+    ctx.stroke();
+    ctx.fillText(mark >= 1000 ? (mark / 1000) + "s" : mark + " ms", 2, y + 3);
+  }
+  for (const point of rhythm) {
+    const x = xOf(point.t);
+    if (point.kind === "block") {
+      ctx.strokeStyle = "#ffd0a6";
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, bottom);
+      ctx.stroke();
+      continue;
+    }
+    if (point.dt > 2000) {
+      ctx.fillStyle = "#ffb000";
+      ctx.fillRect(x, top, 2, 8);
+      continue;
+    }
+    ctx.fillStyle = point.dt < 80 ? "#ffb000" : point.dt < 250 ? "#ff6a00" : point.dt < 700 ? "#ff3d00" : "#ffd0a6";
+    ctx.beginPath();
+    ctx.arc(x, yOf(point.dt), 2.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (playT >= 0) {
+    ctx.strokeStyle = "#fff3e8";
+    ctx.beginPath();
+    ctx.moveTo(xOf(playT), top);
+    ctx.lineTo(xOf(playT), bottom);
+    ctx.stroke();
+  }
+}
+
+function fmt(ms) {
+  ms = Math.max(0, Math.round(ms || 0));
+  if (ms < 1000) return ms + " ms";
+  const total = Math.round(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  if (!m) return s + "s";
+  return m + "m " + String(s).padStart(2, "0") + "s";
+}
+
+playButton.addEventListener("click", toggle);
+document.querySelectorAll(".speed").forEach((button) => {
+  button.addEventListener("click", () => {
+    speed = Number(button.dataset.speed);
+    document.querySelectorAll(".speed").forEach((item) => item.classList.toggle("on", item === button));
+  });
+});
+scrub.addEventListener("input", () => {
+  playing = false;
+  playButton.textContent = "Play";
+  lastTs = null;
+  playT = scrub.value === "0" ? -1 : (scrub.value / 1000) * duration;
+  paint(playT);
+  drawChart();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === " " || event.key === "ArrowRight" || event.key === "ArrowLeft") event.preventDefault();
+  if (event.key === " ") toggle();
+  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+    const step = event.key === "ArrowRight" ? 2000 : -2000;
+    playT = Math.max(-1, Math.min(duration, playT + step));
+    scrub.value = String(playT < 0 ? 0 : Math.round((playT / Math.max(duration, 1)) * 1000));
+    paint(playT);
+    drawChart();
+  }
+});
+
+function toggle() {
+  if (!playing && playT >= duration) playT = -1;
+  playing = !playing;
+  lastTs = null;
+  playButton.textContent = playing ? "Pause" : "Play";
+}
+
+function frame(ts) {
+  if (playing) {
+    if (lastTs != null) playT += (ts - lastTs) * speed;
+    lastTs = ts;
+    if (playT >= duration) {
+      playT = duration;
+      playing = false;
+      lastTs = null;
+      playButton.textContent = "Play";
+    }
+    scrub.value = String(playT < 0 ? 0 : Math.round((playT / Math.max(duration, 1)) * 1000));
+    paint(playT);
+    drawChart();
+  }
+  requestAnimationFrame(frame);
+}
+
+paint(playT);
+drawChart();
+window.addEventListener("resize", drawChart);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
